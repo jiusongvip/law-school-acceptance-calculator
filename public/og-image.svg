@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#234362"/>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#g)"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e3a53"/>
+      <stop offset="1" stop-color="#101f2e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Scale marks -->
+  <g stroke="#d9e2ec" stroke-width="2" opacity="0.35">
+    <line x1="140" y1="500" x2="140" y2="470"/>
+    <line x1="240" y1="500" x2="240" y2="470"/>
+    <line x1="340" y1="500" x2="340" y2="470"/>
+    <line x1="440" y1="500" x2="440" y2="470"/>
+    <line x1="540" y1="500" x2="540" y2="470"/>
+    <line x1="640" y1="500" x2="640" y2="470"/>
+    <line x1="740" y1="500" x2="740" y2="470"/>
+    <line x1="840" y1="500" x2="840" y2="470"/>
+    <line x1="940" y1="500" x2="940" y2="470"/>
+    <line x1="1040" y1="500" x2="1040" y2="470"/>
+  </g>
+
+  <!-- Probability bars -->
+  <rect x="150" y="380" width="70" height="90" rx="4" fill="#6086ad"/>
+  <rect x="260" y="350" width="70" height="120" rx="4" fill="#6086ad"/>
+  <rect x="370" y="320" width="70" height="150" rx="4" fill="#6086ad"/>
+  <rect x="480" y="290" width="70" height="180" rx="4" fill="#6086ad"/>
+  <rect x="590" y="260" width="70" height="210" rx="4" fill="#c1982e"/>
+  <rect x="700" y="300" width="70" height="170" rx="4" fill="#6086ad"/>
+  <rect x="810" y="270" width="70" height="200" rx="4" fill="#6086ad"/>
+  <rect x="920" y="330" width="70" height="140" rx="4" fill="#6086ad"/>
+
+  <!-- Title -->
+  <text x="120" y="150" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="700" fill="#ffffff">
+    Law School Acceptance
+  </text>
+  <text x="120" y="210" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="700" fill="#ffffff">
+    Calculator
+  </text>
+
+  <text x="120" y="265" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#d9e2ec">
+    Free LSAT &amp; GPA chances at every T14 and Top 50 school.
+  </text>
+
+  <!-- Badge -->
+  <rect x="120" y="540" width="220" height="40" rx="20" fill="#c1982e"/>
+  <text x="230" y="566" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="600" fill="#101f2e" text-anchor="middle">
+    100% free, no signup
+  </text>
+</svg>

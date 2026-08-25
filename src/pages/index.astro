@@ -1,0 +1,1008 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ChancesCalculator from '../components/ChancesCalculator';
+import ReverseCalculator from '../components/ReverseCalculator';
+import CostCalculator from '../components/CostCalculator';
+import ScholarshipEstimator from '../components/ScholarshipEstimator';
+import LsatImpact from '../components/LsatImpact';
+import ScorePositioning from '../components/ScorePositioning';
+import { ALL_SCHOOLS, T14_SCHOOLS, DATA_YEAR } from '../data/schools';
+import { T14_DEADLINES, TIMELINE } from '../data/costs';
+import { LSAT_BANDS, GPA_BANDS, SPLITTER_PROFILES } from '../data/guides';
+import { T14_PROFILES } from '../data/school-profiles';
+import { COMPARISON_ROWS, COMPETITORS } from '../data/competitors';
+import { FAQS } from '../data/faqs';
+
+const title = 'Law School Acceptance Calculator - Free LSAT & GPA Chances';
+const description =
+  'Calculate your law school acceptance chances for free using 2025 ABA 509 data. See accept, waitlist, and reject odds at T14 and Top 50 schools. No signup.';
+
+const faqs = FAQS;
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
+const webAppSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Law School Acceptance Calculator',
+  url: 'https://www.law-school-acceptance-calculator.com/',
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Any',
+  description,
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+};
+
+const datasetSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: `Law School Admissions Data (${DATA_YEAR})`,
+  description: `LSAT, GPA, and acceptance rate percentiles for T14 and Top 50 U.S. law schools, ${DATA_YEAR} entering class, sourced from ABA 509 Required Disclosures.`,
+  license: 'https://www.americanbar.org/groups/legal_education/resources/statistics/',
+  isAccessibleForFree: true,
+  dateModified: `${DATA_YEAR}-12-01`,
+  temporalCoverage: `${DATA_YEAR}-01-01/${DATA_YEAR}-12-31`,
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalURL="https://www.law-school-acceptance-calculator.com"
+  schema={[webAppSchema, faqSchema, datasetSchema]}
+>
+  <!-- Hero -->
+  <section class="section-pad border-b border-[var(--line)] bg-[var(--surface)]">
+    <div class="page-shell">
+      <div class="max-w-3xl">
+        <h1 class="text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-navy-950 md:text-5xl">
+          Law School Acceptance Calculator
+        </h1>
+        <p class="mt-4 max-w-[60ch] text-lg leading-relaxed text-[var(--muted)]">
+          Enter your LSAT and GPA to see your admission chances at every T14 and Top 50 law school,
+          ranked into reach, target, and safety tiers. Free, no signup, based on official ABA 509 data.
+        </p>
+      </div>
+
+      <div id="calculator" class="mt-8 scroll-mt-24">
+        <ChancesCalculator client:load />
+      </div>
+
+      <!-- Static fallback result, visible to crawlers without JS -->
+      <noscript>
+        <div class="mt-6 rounded-xl border border-[var(--line)] bg-[var(--soft)] p-6">
+          <p class="font-medium text-navy-900">Example: LSAT 170 and 3.85 GPA</p>
+          <p class="mt-2 text-sm text-[var(--muted)]">
+            With these numbers, every T14 school is a reach, but your odds vary meaningfully:
+            Georgetown and Berkeley around 12%, Cornell and Duke around 9-10%, and Yale, Stanford,
+            Harvard, and Chicago near 2-4%. Enable JavaScript to calculate your own chances.
+          </p>
+        </div>
+      </noscript>
+
+      <div id="positioning" class="mt-8 scroll-mt-24">
+        <ScorePositioning client:load />
+      </div>
+    </div>
+  </section>
+
+  <!-- T14 data table (static, crawlable) -->
+  <section id="t14-data" class="section-pad scroll-mt-24">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        T14 Law Schools: LSAT, GPA &amp; Acceptance Rates
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Complete {DATA_YEAR} admissions data for the T14. Median LSAT and GPA are the 50th
+        percentile of enrolled full-time students, from ABA 509 Required Disclosures.
+      </p>
+
+      <div class="mt-8 overflow-x-auto rounded-2xl border border-[var(--line)] bg-white">
+        <table class="w-full min-w-[720px] border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-[var(--line)] bg-[var(--soft)] text-left">
+              <th class="px-4 py-3 font-semibold text-navy-900">Rank</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">School</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">Acceptance Rate</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">LSAT Median</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">LSAT 25th-75th</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">GPA Median</th>
+            </tr>
+          </thead>
+          <tbody>
+            {T14_SCHOOLS.map((s) => (
+              <tr class="border-b border-[var(--line)] last:border-0">
+                <td class="px-4 py-3 text-[var(--muted)]">#{s.rank}</td>
+                <td class="px-4 py-3 font-medium text-navy-900">{s.name}</td>
+                <td class="px-4 py-3 tabular-nums text-navy-900">
+                  {Math.round(s.acceptanceRate * 100)}%
+                </td>
+                <td class="px-4 py-3 font-semibold tabular-nums text-navy-900">{s.lsat.p50}</td>
+                <td class="px-4 py-3 tabular-nums text-[var(--muted)]">
+                  {s.lsat.p25}-{s.lsat.p75}
+                </td>
+                <td class="px-4 py-3 tabular-nums text-navy-900">{s.gpa.p50.toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-3 text-xs text-[var(--muted)]">
+        Data source:{' '}<a href="https://www.americanbar.org/groups/legal_education/resources/statistics/" target="_blank" rel="noopener" class="underline decoration-navy-200 underline-offset-2 hover:decoration-navy-800">ABA 509 Required Disclosures</a>, {DATA_YEAR} entering class.
+      </p>
+    </div>
+  </section>
+
+  <!-- Top 50 full table -->
+  <section id="top-50" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        Top 50 Law Schools Comparison
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Compare acceptance rates, median LSAT, and median GPA across 30 of the most competitive law
+        schools in the United States.
+      </p>
+
+      <div class="mt-8 overflow-x-auto rounded-2xl border border-[var(--line)] bg-white">
+        <table class="w-full min-w-[720px] border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-[var(--line)] bg-[var(--soft)] text-left">
+              <th class="px-4 py-3 font-semibold text-navy-900">Rank</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">School</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">Location</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">Acceptance Rate</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">LSAT Median</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">GPA Median</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ALL_SCHOOLS.map((s) => (
+              <tr class="border-b border-[var(--line)] last:border-0">
+                <td class="px-4 py-3 text-[var(--muted)]">#{s.rank}</td>
+                <td class="px-4 py-3 font-medium text-navy-900">{s.name}</td>
+                <td class="px-4 py-3 text-[var(--muted)]">{s.location}</td>
+                <td class="px-4 py-3 tabular-nums text-navy-900">
+                  {Math.round(s.acceptanceRate * 100)}%
+                </td>
+                <td class="px-4 py-3 font-semibold tabular-nums text-navy-900">{s.lsat.p50}</td>
+                <td class="px-4 py-3 tabular-nums text-navy-900">{s.gpa.p50.toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reverse calculator -->
+  <section id="reverse" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        Reverse Calculator: What LSAT Do I Need?
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Pick a target school and your current GPA to find the LSAT score you need for a given
+        admission probability.
+      </p>
+      <div class="mt-8">
+        <ReverseCalculator client:visible />
+      </div>
+    </div>
+  </section>
+
+  <!-- LSAT score impact -->
+  <section id="score-impact" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        Should I Retake the LSAT?
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        See how much a few LSAT points actually move your chances at a target school. This helps
+        you decide whether a retake is worth the time and money.
+      </p>
+      <div class="mt-8">
+        <LsatImpact client:visible />
+      </div>
+    </div>
+  </section>
+
+  <!-- Application cost -->
+  <section id="cost" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        Law School Application Cost Calculator
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Application fees, CAS reports, and LSAT retakes add up fast. Estimate your total outlay
+        before you commit to a school list.
+      </p>
+      <div class="mt-8">
+        <CostCalculator client:visible />
+      </div>
+    </div>
+  </section>
+
+  <!-- Scholarship estimator -->
+  <section id="scholarship" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        Law School Scholarship Estimator
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Scholarships track the same medians as admission: the more you sit above a school's LSAT
+        and GPA medians, the larger the offer. See your scholarship outlook at every T14 and Top 50
+        school.
+      </p>
+      <div class="mt-8">
+        <ScholarshipEstimator client:visible />
+      </div>
+    </div>
+  </section>
+
+  <!-- Deadlines & timeline -->
+  <section id="deadlines" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        T14 Application Deadlines
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Regular and early decision deadlines for the T14. Dates reflect the 2025-2026 cycle and
+        shift slightly each year, so always confirm on each school's website.
+      </p>
+
+      <div class="mt-8 overflow-x-auto rounded-2xl border border-[var(--line)] bg-white">
+        <table class="w-full min-w-[640px] border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-[var(--line)] bg-[var(--soft)] text-left">
+              <th class="px-4 py-3 font-semibold text-navy-900">School</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">Early Decision</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">Regular Decision</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">App Fee</th>
+            </tr>
+          </thead>
+          <tbody>
+            {T14_DEADLINES.map((d) => (
+              <tr class="border-b border-[var(--line)] last:border-0">
+                <td class="px-4 py-3 font-medium text-navy-900">{d.name}</td>
+                <td class="px-4 py-3 text-[var(--muted)]">
+                  {d.earlyDecision ?? <span class="text-xs">Not offered</span>}
+                </td>
+                <td class="px-4 py-3 font-semibold tabular-nums text-navy-900">
+                  {d.regularDecision}
+                </td>
+                <td class="px-4 py-3 tabular-nums text-[var(--muted)]">${d.applicationFee}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        <div>
+          <h3 class="text-xl font-semibold tracking-tight text-navy-900">
+            Application timeline
+          </h3>
+          <ol class="mt-4 space-y-4">
+            {TIMELINE.map((t, i) => (
+              <li class="flex gap-4">
+                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-semibold text-white">
+                  {i + 1}
+                </span>
+                <div>
+                  <p class="text-sm font-semibold text-navy-900">{t.when}</p>
+                  <p class="mt-1 text-sm leading-relaxed text-[var(--muted)]">{t.task}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div class="rounded-xl border border-[var(--line)] bg-[var(--soft)] p-6">
+          <h3 class="text-xl font-semibold tracking-tight text-navy-900">
+            Why early application matters
+          </h3>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Nearly all T14 schools use rolling admissions, meaning they review applications as they
+            arrive and fill seats progressively. Submitting by November can put you in front of
+            admissions officers before the bulk of the applicant pool arrives, which many observers
+            describe as a genuine edge, especially for borderline candidates.
+          </p>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Early decision, where offered, is usually binding and can provide a modest boost, but
+            only apply ED to a school you would attend regardless of cost.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guide -->
+  <section id="guide" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell grid gap-10 lg:grid-cols-[1fr_1fr]">
+      <div>
+        <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+          How This Calculator Works
+        </h2>
+        <div class="mt-6 space-y-5 text-[var(--muted)] leading-relaxed">
+          <p>
+            This tool estimates your chances at each law school by measuring how far your LSAT and
+            GPA sit from that school's enrolled-student median, then mapping that distance to a
+            probability using a calibrated curve. The LSAT is weighted at 60% and GPA at 40%,
+            reflecting the fact that admissions officers treat the LSAT as the stronger predictor
+            of law school performance. This is the same transparent, median-based approach that
+            admissions experts have used for years — no black box, no hidden model.
+          </p>
+          <p>
+            Concretely: if your LSAT sits right at a school's median, the model anchors your odds
+            near that school's reported acceptance rate. Every point above the median raises your
+            probability; every point below lowers it. Because the LSAT is weighted more heavily,
+            one LSAT point moves your odds more than a comparable bump in GPA — which is exactly
+            how admissions offices describe their own weighting.
+          </p>
+          <p>
+            Results are grouped into three tiers. A <strong class="text-navy-900">reach</strong> is
+            a school where your estimated chance is under 25% and your numbers sit below the
+            median. A <strong class="text-navy-900">target</strong> (25-55%) is a school where your
+            numbers are near the median, making it a realistic option. A{' '}
+            <strong class="text-navy-900">safety</strong> (above 55%) is a school where your numbers
+            are above the median, giving you strong odds. Most applicants should carry schools in
+            all three tiers.
+          </p>
+          <p>
+            The underlying data comes from ABA 509 Required Disclosures, which every accredited
+            law school must file annually. We use the 25th, 50th, and 75th percentile LSAT and GPA
+            of enrolled full-time students for the 2025 entering class, plus each school's reported
+            acceptance rate. These are the exact numbers that feed the U.S. News rankings, which
+            is why they are the most reliable public admissions data available.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+          What This Calculator Cannot See
+        </h2>
+        <div class="mt-6 space-y-5 text-[var(--muted)] leading-relaxed">
+          <p>
+            Your LSAT and GPA only tell part of the story. Law schools also weigh your personal
+            statement, letters of recommendation, resume, work experience, and, in many cases, your
+            diversity of background and perspective. A compelling narrative can lift an otherwise
+            average application, while a weak one can sink strong numbers.
+          </p>
+          <p>
+            Early decision, legacy status, and demonstrated interest can shift the odds at specific
+            schools. None of these factors are reflected in a numbers-only estimate. Use this
+            calculator to build a sensible list and set expectations, then invest real effort in the
+            qualitative parts of each application.
+          </p>
+          <p>
+            Law school admissions is and is not a numbers game. The numbers decide which schools are
+            realistic, but the rest of your application decides whether you actually get in.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LSAT score bands -->
+  <section id="lsat-bands" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        What LSAT Score Do I Need?
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Every LSAT score range opens a different tier of schools. Use this guide to see where your
+        score lands and what it realistically buys you, based on 2025 ABA 509 medians.
+      </p>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        {LSAT_BANDS.map((band) => (
+          <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-semibold tracking-tight text-navy-900">{band.range}</h3>
+              <span class="rounded-full bg-navy-50 px-2.5 py-1 text-xs font-semibold text-navy-800 ring-1 ring-navy-200">
+                LSAT
+              </span>
+            </div>
+            <p class="mt-2 text-sm font-medium text-navy-800">{band.title}</p>
+            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">{band.summary}</p>
+            <p class="mt-3 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+              Typical schools
+            </p>
+            <p class="mt-1 text-sm text-navy-900">{band.schools.join(', ')}</p>
+            <p class="mt-3 rounded-lg bg-[var(--soft)] p-3 text-sm leading-relaxed text-[var(--muted)]">
+              <span class="font-semibold text-navy-900">Strategy: </span>{band.advice}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- LSAT improvement guide -->
+  <section id="lsat-improve" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        How to Improve Your LSAT Score
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Retaking the LSAT is the single highest-leverage move most applicants can make, but the
+        right plan depends on where you are starting. Here is a playbook for each starting band,
+        based on how much a score jump actually changes your school options.
+      </p>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-3">
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Starting below 150</h3>
+          <p class="mt-1 text-sm font-medium text-navy-800">Target: 155-160</p>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Below 150, the biggest wins come from fundamentals, not advanced technique. Master the
+            three section types — logical reasoning, reading comprehension, and analytical
+            reasoning — with a structured course or tutor, and drill untimed before adding pacing.
+            A jump from 145 to 158 is very achievable for most people and completely changes your
+            school options: it moves you from the least selective schools into the Top 60-100 band
+            and unlocks scholarships. Plan for 3-6 months of consistent study.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Starting at 150-159</h3>
+          <p class="mt-1 text-sm font-medium text-navy-800">Target: 163-168</p>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            This is where the highest-return gains live. The jump from 158 to 165 moves you from
+            the 70th to the 93rd percentile and opens the Top 25-50 schools. Focus on identifying
+            your weakest section and drilling it relentlessly, reviewing every wrong answer to
+            understand the reasoning pattern, and building test-day pacing. A 5-7 point gain is
+            realistic with 2-4 months of focused study, and it is the cheapest way to upgrade your
+            entire school list.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Starting at 160-169</h3>
+          <p class="mt-1 text-sm font-medium text-navy-800">Target: 170-174</p>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Above 160, gains come from eliminating the last few mistakes, not learning new
+            material. The jump from 166 to 171 clears the median at most T14 schools and is often
+            the difference between a reach and a target. Drill the hardest question types, take
+            timed, full-length practice tests weekly, and analyze every miss in writing. A 3-5
+            point gain is realistic for disciplined studiers and is the single highest-leverage
+            move for T14 applicants sitting just below medians.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 rounded-2xl border border-[var(--line)] bg-[var(--soft)] p-6">
+        <p class="text-sm leading-relaxed text-[var(--muted)]">
+          <span class="font-semibold text-navy-900">The rule of thumb: </span>
+          if you are scoring meaningfully higher on recent, timed practice tests than your last
+          real score, a retake is almost always worth it — the return on a few extra LSAT points
+          is larger than the return on anything else in your application. Use the retake-impact
+          tool above to see exactly how much a gain would change your odds at your target schools.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GPA score bands -->
+  <section id="gpa-bands" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        What GPA Do I Need for Law School?
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Your undergraduate GPA is the second number every law school weighs. See what each GPA
+        range means in practice and how to pair it with the right LSAT score.
+      </p>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        {GPA_BANDS.map((band) => (
+          <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-semibold tracking-tight text-navy-900">{band.range}</h3>
+              <span class="rounded-full bg-gold-50 px-2.5 py-1 text-xs font-semibold text-gold-800 ring-1 ring-gold-200">
+                GPA
+              </span>
+            </div>
+            <p class="mt-2 text-sm font-medium text-navy-800">{band.title}</p>
+            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">{band.summary}</p>
+            <p class="mt-3 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+              Typical schools
+            </p>
+            <p class="mt-1 text-sm text-navy-900">{band.schools.join(', ')}</p>
+            <p class="mt-3 rounded-lg bg-[var(--soft)] p-3 text-sm leading-relaxed text-[var(--muted)]">
+              <span class="font-semibold text-navy-900">Strategy: </span>{band.advice}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Splitter strategy -->
+  <section id="splitter" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        Splitter and Reverse Splitter Strategy
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        A splitter has one strong number and one weak one. How you play that imbalance depends on
+        which number is strong. Here is the playbook for both situations.
+      </p>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        {SPLITTER_PROFILES.map((p) => (
+          <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+            <h3 class="text-lg font-semibold tracking-tight text-navy-900">{p.title}</h3>
+            <p class="mt-1 text-sm font-medium text-navy-800">{p.pattern}</p>
+            <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">{p.why}</p>
+            <ul class="mt-4 space-y-2">
+              {p.strategy.map((s) => (
+                <li class="flex gap-2 text-sm leading-relaxed text-[var(--muted)]">
+                  <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-navy-500"></span>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Beyond the numbers -->
+  <section id="soft-factors" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        Beyond the Numbers: What Else Moves Your Chances
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Your LSAT and GPA decide which schools are realistic, but the soft factors — background,
+        experience, essays, recommendations, and timing — often decide whether you actually get in
+        at the schools where your numbers are competitive. Here is what each one is worth.
+      </p>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Underrepresented minority (URM) status</h3>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Law schools place real, measurable value on diversity, and applicants from
+            underrepresented racial and ethnic groups often see a meaningful boost at the same
+            LSAT and GPA — in practice, a URM applicant can be competitive at schools where their
+            numbers sit several points below the median. The effect varies by school and year, and
+            admissions policies around race have been shifting, so treat it as a genuine but
+            unpredictable advantage rather than a guarantee.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Work experience</h3>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Work experience is growing in importance, and a majority of students at schools like
+            Northwestern arrive with one to three years of it. It gives you maturity, concrete
+            material for essays, and a clearer answer to "why law." It can partly offset a softer
+            GPA, but it cannot compensate for an LSAT far below a school's median. If your numbers
+            are average, a year or two of meaningful work is one of the best investments you can make.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Personal statement and essays</h3>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Essays matter most at the margins and at the very top. With identical numbers, a strong
+            personal statement can tip a close decision, while a weak one can sink strong stats. At
+            Yale, Stanford, and Harvard — where nearly every applicant has elite numbers — the
+            essays are often what separate admits from waitlists. A compelling narrative about a
+            genuine commitment beats a list of achievements every time.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Letters of recommendation</h3>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Recommendations carry real weight, and a detailed, enthusiastic letter from a professor
+            who knows your work well beats a generic letter from a famous name. A lukewarm or vague
+            letter is a genuine negative, so choose recommenders who can write specifically about
+            your analytical ability and writing. Two academic recommenders plus one professional
+            (if you have worked) is the right mix for most applicants.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Early decision</h3>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Early decision can provide a measurable boost at schools that offer it — Duke, Cornell,
+            and Georgetown are known to give ED a real edge — because it signals strong interest and
+            lets the school lock in a committed applicant. Yale, Stanford, and Harvard do not offer
+            binding ED. The catch: ED is usually binding, so only apply ED to a school you would
+            attend regardless of cost, and understand you may lose scholarship negotiating leverage.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Applying early in the cycle</h3>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Because most schools use rolling admissions, submitting by November is one of the few
+            factors entirely within your control that measurably improves your odds. Seats and
+            scholarship budgets are fuller later in the cycle, and the effect is largest for
+            borderline applicants sitting near a school's medians. Treat the October-November
+            window as a real strategic advantage, not a nice-to-have.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- T14 school profiles -->
+  <section id="school-profiles" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        T14 School Profiles: What Each School Wants
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Every T14 school has a distinct personality. Understanding what each one values helps you
+        decide where your application fits best.
+      </p>
+
+      <div class="mt-8 overflow-hidden rounded-2xl border border-[var(--line)] bg-white">
+        <img
+          src="/law-school-library.webp"
+          alt="A grand law school library with towering wooden bookshelves filled with legal volumes"
+          width="1200"
+          height="675"
+          loading="lazy"
+          decoding="async"
+          class="h-auto w-full object-cover"
+        />
+      </div>
+
+      <div class="mt-8 grid gap-4 lg:grid-cols-2">
+        {T14_PROFILES.map((p) => (
+          <details class="group rounded-xl border border-[var(--line)] bg-white">
+            <summary class="flex cursor-pointer list-none items-center justify-between px-5 py-4">
+              <span class="text-base font-semibold text-navy-900">{p.name}</span>
+              <svg class="h-5 w-5 shrink-0 text-[var(--muted)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </summary>
+            <div class="space-y-3 px-5 pb-5 text-sm leading-relaxed text-[var(--muted)]">
+              <p class="font-medium text-navy-800">{p.vibe}</p>
+              <ul class="space-y-1.5">
+                {p.knownFor.map((k) => (
+                  <li class="flex gap-2">
+                    <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold-400"></span>
+                    {k}
+                  </li>
+                ))}
+              </ul>
+              <p class="rounded-lg bg-[var(--soft)] p-3">
+                <span class="font-semibold text-navy-900">Admissions: </span>{p.admissionsNote}
+              </p>
+              <p class="rounded-lg bg-navy-50 p-3">
+                <span class="font-semibold text-navy-900">Strategy: </span>{p.strategy}
+              </p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Outcomes & ROI -->
+  <section id="outcomes" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        Outcomes, Debt, and Return on Investment
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Getting in is only half the decision. Before you commit three years and tens of thousands
+        of dollars, understand what each school actually delivers — employment, bar passage, and
+        the debt you will carry.
+      </p>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Employment outcomes</h3>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            The return on a law degree depends heavily on whether graduates actually become
+            lawyers. The ABA publishes employment data for every accredited school, and the gaps
+            are enormous: some schools place over 90% of graduates in full-time, long-term,
+            bar-passage-required jobs, while others place under 50%. Check the "bar passage
+            required" employment rate specifically — it is the single most honest measure of a
+            school's ability to make you a lawyer.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Bar passage rates</h3>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Bar passage is the gatekeeper to a legal career, and rates vary widely by school. A
+            school ranked 20 spots lower with a 95% first-time bar passage rate can be a far better
+            investment than a higher-ranked school with a 70% rate. Always check both first-time
+            and ultimate bar passage, and be wary of schools where a large share of graduates
+            cannot pass the bar on their first attempt.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">The cost of law school</h3>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Annual tuition at T14 schools runs roughly $63,000-$82,000, and total cost of
+            attendance often exceeds $100,000 per year at private schools. Many graduates carry
+            $150,000-$200,000 in debt. Whether that debt is manageable depends on your career path:
+            big-law associates earn $200,000+ in their first year, while public-interest and
+            smaller-firm lawyers earn far less and often rely on loan forgiveness programs.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-lg font-semibold tracking-tight text-navy-900">Scholarships and aid</h3>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+            Scholarships track the same medians as admission: the more you are above a school's
+            LSAT and GPA medians, the larger the offer. An applicant at the 75th percentile of both
+            can often secure substantial aid — sometimes full tuition — while someone at the 25th
+            percentile may receive little or none. If minimizing debt matters to you, target schools
+            where your numbers are above the medians rather than chasing the highest rank.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-8 rounded-2xl border border-[var(--line)] bg-[var(--soft)] p-6">
+        <h3 class="text-lg font-semibold tracking-tight text-navy-900">The honest rule</h3>
+        <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+          Attend the best school you can afford without excessive debt, and match your school
+          choice to your actual career goals rather than prestige alone. A full-ride at a strong
+          regional school can be a smarter financial decision than sticker price at a T14 — the
+          math depends on what you want to do and where you want to practice. Use the cost
+          calculator above to estimate your application budget, then research each school's
+          employment and bar passage data before you decide.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Application checklist -->
+  <section id="checklist" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        Law School Application Checklist
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Everything you need to assemble a complete application, in the order you should tackle it.
+        Missing one item can sink an otherwise strong file, so use this as your master list.
+      </p>
+
+      <ol class="mt-8 space-y-4">
+        <li class="flex gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-semibold text-white">1</span>
+          <div>
+            <p class="text-sm font-semibold text-navy-900">LSAT (or GRE) score</p>
+            <p class="mt-1 text-sm leading-relaxed text-[var(--muted)]">
+              The single most important number in your application. Take it early enough to retake
+              if needed, and know that schools overwhelmingly use your highest score.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-semibold text-white">2</span>
+          <div>
+            <p class="text-sm font-semibold text-navy-900">Transcripts sent to LSAC (CAS)</p>
+            <p class="mt-1 text-sm leading-relaxed text-[var(--muted)]">
+              Request official transcripts from every institution you attended. LSAC recalculates
+              them into a single CAS GPA, which is the number schools actually see.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-semibold text-white">3</span>
+          <div>
+            <p class="text-sm font-semibold text-navy-900">Personal statement</p>
+            <p class="mt-1 text-sm leading-relaxed text-[var(--muted)]">
+              Your main essay. Show a genuine commitment and a clear "why law," not a list of
+              achievements. This is what separates admits from waitlists at the very top.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-semibold text-white">4</span>
+          <div>
+            <p class="text-sm font-semibold text-navy-900">Letters of recommendation (2-3)</p>
+            <p class="mt-1 text-sm leading-relaxed text-[var(--muted)]">
+              Two academic recommenders plus one professional (if you have worked) is the standard
+              mix. Choose people who can write specifically about your abilities.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-semibold text-white">5</span>
+          <div>
+            <p class="text-sm font-semibold text-navy-900">Resume</p>
+            <p class="mt-1 text-sm leading-relaxed text-[var(--muted)]">
+              A one- to two-page resume tailored to law admissions: education, work, and
+              activities, with a few deep commitments rather than a long list of shallow ones.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-semibold text-white">6</span>
+          <div>
+            <p class="text-sm font-semibold text-navy-900">Optional essays (diversity, "Why X," addenda)</p>
+            <p class="mt-1 text-sm leading-relaxed text-[var(--muted)]">
+              Add a diversity statement if you have a distinctive background, a "Why X" essay for
+              schools that value demonstrated interest (like UVA), and a GPA/LSAT addendum only if
+              you have a genuine explanation.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-semibold text-white">7</span>
+          <div>
+            <p class="text-sm font-semibold text-navy-900">Application fees or fee waivers</p>
+            <p class="mt-1 text-sm leading-relaxed text-[var(--muted)]">
+              Budget roughly $130 per school in fees and CAS reports, and apply for LSAC and
+              school-level fee waivers early if you are eligible.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-semibold text-white">8</span>
+          <div>
+            <p class="text-sm font-semibold text-navy-900">Interview prep (where offered)</p>
+            <p class="mt-1 text-sm leading-relaxed text-[var(--muted)]">
+              Northwestern interviews nearly everyone; several other schools offer optional
+              interviews. Prepare a clear "why law" and "why this school" answer.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Competitor comparison -->
+  <section id="comparison" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        How We Compare to 7Sage, LSD.law, and LSAC
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Several tools promise to estimate your law school chances. Here is an honest, side-by-side
+        look at what each one actually offers.
+      </p>
+
+      <div class="mt-8 overflow-x-auto rounded-2xl border border-[var(--line)] bg-white">
+        <table class="w-full min-w-[720px] border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-[var(--line)] bg-[var(--soft)] text-left">
+              <th class="px-4 py-3 font-semibold text-navy-900">Feature</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">This Site</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">7Sage</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">LSD.law</th>
+              <th class="px-4 py-3 font-semibold text-navy-900">LSAC</th>
+            </tr>
+          </thead>
+          <tbody>
+            {COMPARISON_ROWS.map((row) => (
+              <tr class="border-b border-[var(--line)] last:border-0">
+                <td class="px-4 py-3 font-medium text-navy-900">{row.feature}</td>
+                <td class={`px-4 py-3 ${row.oursAdvantage ? 'bg-navy-50 font-medium text-navy-900' : 'text-[var(--muted)]'}`}>
+                  {row.ours}
+                </td>
+                <td class="px-4 py-3 text-[var(--muted)]">{row.sevenSage}</td>
+                <td class="px-4 py-3 text-[var(--muted)]">{row.lsd}</td>
+                <td class="px-4 py-3 text-[var(--muted)]">{row.lsac}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-3">
+        {Object.values(COMPETITORS).map((c) => (
+          <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+            <h3 class="text-base font-semibold tracking-tight text-navy-900">
+              <a href={c.url} target="_blank" rel="noopener" class="hover:underline">{c.name}</a>
+            </h3>
+            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">{c.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell max-w-3xl">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        Frequently Asked Questions
+      </h2>
+      <div class="mt-8 space-y-4">
+        {faqs.map((f) => (
+          <details class="group rounded-xl border border-[var(--line)] bg-white">
+            <summary class="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-base font-semibold text-navy-900">
+              {f.q}
+              <svg
+                class="h-5 w-5 shrink-0 text-[var(--muted)] transition-transform group-open:rotate-180"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </summary>
+            <div class="px-5 pb-5 text-sm leading-relaxed text-[var(--muted)]">
+              {f.a}
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Data source & trust -->
+  <section id="about-data" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell max-w-3xl">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        About This Data
+      </h2>
+      <div class="mt-8 flex justify-center">
+        <img
+          src="/scales-of-justice.webp"
+          alt="An antique brass scales of justice, symbolizing the transparent and balanced admissions model"
+          width="800"
+          height="800"
+          loading="lazy"
+          decoding="async"
+          class="h-auto w-56 rounded-2xl border border-[var(--line)] object-cover"
+        />
+      </div>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-base font-semibold text-navy-900">Data source</h3>
+          <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+            Every number on this page comes from{' '}
+            <a
+              href="https://www.americanbar.org/groups/legal_education/resources/statistics/"
+              target="_blank"
+              rel="noopener"
+              class="text-navy-800 underline decoration-navy-200 underline-offset-2 hover:decoration-navy-800"
+            >
+              ABA 509 Required Disclosures
+            </a>{' '}
+            for the {DATA_YEAR} entering class — the standardized report every ABA-accredited law
+            school must file annually. These are the same LSAT and GPA percentiles and acceptance
+            rates that feed the U.S. News rankings, which is why they are the most reliable public
+            admissions data available.
+          </p>
+          <p class="mt-3 text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+            Data last updated: {DATA_YEAR} entering class
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-base font-semibold text-navy-900">Methodology</h3>
+          <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+            This calculator uses a transparent, median-based model — no black box. It measures how
+            far your LSAT (weighted 60%) and GPA (weighted 40%) sit from each school's
+            enrolled-student median and maps that distance to a probability. You can see exactly
+            why a school is a reach or a safety, unlike machine-learning predictors that hide
+            their reasoning.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-[var(--line)] bg-white p-6">
+          <h3 class="text-base font-semibold text-navy-900">Limitations</h3>
+          <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+            No calculator can see the parts of your application that admissions offices also weigh
+            — essays, recommendations, work experience, and timing. Treat each percentage as a
+            rough estimate, not a promise, and use the results to build a balanced list rather
+            than to rule schools in or out. Medians rise slightly most years, so a score at last
+            year's median may sit just below this year's.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

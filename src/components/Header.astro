@@ -1,0 +1,80 @@
+---
+const navItems = [
+  { label: 'Calculator', href: '#calculator' },
+  { label: 'T14 Data', href: '#t14-data' },
+  { label: 'Reverse', href: '#reverse' },
+  { label: 'Retake', href: '#score-impact' },
+  { label: 'LSAT Guide', href: '#lsat-bands' },
+  { label: 'Splitters', href: '#splitter' },
+  { label: 'Profiles', href: '#school-profiles' },
+  { label: 'Outcomes', href: '#outcomes' },
+  { label: 'FAQ', href: '#faq' },
+];
+---
+
+<header class="sticky top-0 z-50 border-b border-[var(--line)] bg-white/95 backdrop-blur">
+  <nav class="page-shell flex h-16 items-center justify-between" aria-label="Main navigation">
+    <a href="/" class="flex min-w-0 items-center gap-2 font-semibold tracking-[-0.02em] text-navy-900">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0">
+        <path d="M12 3v18" />
+        <path d="M4 7h8" />
+        <path d="M4 12h8" />
+        <path d="M4 17h8" />
+        <path d="M20 7h-2.5" />
+        <path d="M20 12h-2.5" />
+        <path d="M20 17h-2.5" />
+      </svg>
+      <span class="truncate">Law School Acceptance Calculator</span>
+    </a>
+
+    <div class="hidden items-center gap-1 lg:flex">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class="rounded-lg px-3 py-2 text-sm font-medium text-[var(--muted)] transition-colors hover:bg-[var(--soft)] hover:text-navy-800"
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+
+    <button
+      id="mobile-menu-btn"
+      class="inline-flex items-center justify-center rounded-lg p-2 text-[var(--muted)] hover:bg-[var(--soft)] lg:hidden"
+      aria-label="Toggle menu"
+      type="button"
+    >
+      <svg id="menu-icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      <svg id="menu-icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="hidden" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" />
+      </svg>
+    </button>
+  </nav>
+
+  <div id="mobile-nav" class="hidden border-t border-[var(--line)] bg-white pb-3 pt-2 lg:hidden">
+    <div class="page-shell flex flex-col">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class="rounded-lg px-3 py-2 text-base font-medium text-[var(--muted)] transition-colors hover:bg-[var(--soft)] hover:text-navy-800"
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const nav = document.getElementById('mobile-nav');
+  const iconOpen = document.getElementById('menu-icon-open');
+  const iconClose = document.getElementById('menu-icon-close');
+  btn?.addEventListener('click', () => {
+    nav?.classList.toggle('hidden');
+    iconOpen?.classList.toggle('hidden');
+    iconClose?.classList.toggle('hidden');
+  });
+</script>

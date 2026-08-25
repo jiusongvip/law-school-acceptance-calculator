@@ -1,0 +1,50 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="mt-auto border-t border-[var(--line)] bg-white">
+  <div class="page-shell grid grid-cols-1 gap-10 py-12 md:grid-cols-2 lg:grid-cols-4">
+    <div class="lg:col-span-1">
+      <a href="/" class="text-lg font-semibold tracking-[-0.02em] text-navy-900">
+        Law School Acceptance Calculator
+      </a>
+      <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+        Free law school acceptance calculator using ABA 509 data. See your odds at T14 and Top 50 schools instantly, no signup required.
+      </p>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-semibold text-navy-900">Tools</h3>
+      <ul class="mt-3 space-y-2">
+        <li><a href="#calculator" class="text-sm text-[var(--muted)] hover:text-navy-700">Acceptance Calculator</a></li>
+        <li><a href="#score-impact" class="text-sm text-[var(--muted)] hover:text-navy-700">LSAT Retake Impact</a></li>
+        <li><a href="#cost" class="text-sm text-[var(--muted)] hover:text-navy-700">Application Cost</a></li>
+        <li><a href="#t14-data" class="text-sm text-[var(--muted)] hover:text-navy-700">T14 Admissions Data</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-semibold text-navy-900">Resources</h3>
+      <ul class="mt-3 space-y-2">
+        <li><a href="#guide" class="text-sm text-[var(--muted)] hover:text-navy-700">How It Works</a></li>
+        <li><a href="#deadlines" class="text-sm text-[var(--muted)] hover:text-navy-700">Deadlines &amp; Timeline</a></li>
+        <li><a href="#top-50" class="text-sm text-[var(--muted)] hover:text-navy-700">Top 50 Comparison</a></li>
+        <li><a href="#faq" class="text-sm text-[var(--muted)] hover:text-navy-700">FAQ</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-semibold text-navy-900">About</h3>
+      <p class="mt-3 text-xs leading-relaxed text-[var(--muted)]">
+        Estimated chances are based on ABA 509 Required Disclosures ({new Date().getFullYear() - 1} entering class). They do not account for essays, recommendations, work experience, or other soft factors. Results are informational, not a guarantee of admission.
+      </p>
+    </div>
+  </div>
+
+  <div class="border-t border-[var(--line)]">
+    <div class="page-shell flex flex-col gap-2 py-6 text-xs text-[var(--muted)] sm:flex-row sm:items-center sm:justify-between">
+      <p>&copy; {currentYear} Law School Acceptance Calculator. All rights reserved.</p>
+      <p>Independent educational tool. Not affiliated with LSAC or any law school.</p>
+    </div>
+  </div>
+</footer>
