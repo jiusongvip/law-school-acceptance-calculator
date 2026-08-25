@@ -121,7 +121,7 @@ export default function LsatImpact() {
 
       {/* Probability curve */}
       <div className="mt-6">
-        <div className="flex h-32 items-end gap-1">
+        <div className="flex h-32 items-stretch gap-1">
           {points.map((p) => (
             <div key={p.lsat} className="flex flex-1 flex-col items-center justify-end">
               <div
