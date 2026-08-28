@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { T14_SCHOOLS } from '../data/schools';
+import { ALL_SCHOOLS } from '../data/schools';
+import SchoolSelect from './SchoolSelect';
 
 // Score positioning: shows where the applicant's LSAT and GPA fall relative to
 // a selected school's 25th / 50th / 75th percentile. This is the visualization
@@ -80,12 +81,12 @@ function PercentileBar({
 }
 
 export default function ScorePositioning() {
-  const [schoolSlug, setSchoolSlug] = useState(T14_SCHOOLS[3].slug); // Harvard default
+  const [schoolSlug, setSchoolSlug] = useState(ALL_SCHOOLS[3].slug); // Harvard default
   const [lsat, setLsat] = useState(170);
   const [gpa, setGpa] = useState(3.85);
 
   const school = useMemo(
-    () => T14_SCHOOLS.find((s) => s.slug === schoolSlug) ?? T14_SCHOOLS[0],
+    () => ALL_SCHOOLS.find((s) => s.slug === schoolSlug) ?? ALL_SCHOOLS[0],
     [schoolSlug],
   );
 
@@ -98,24 +99,13 @@ export default function ScorePositioning() {
   const gpaInfo = positionLabel(gpa, school.gpa.p25, school.gpa.p50, school.gpa.p75);
 
   return (
-    <div className="rounded-2xl border border-[var(--line)] bg-white p-6 shadow-sm sm:p-8">
+    <div className="shadow-card rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-8">
       <div className="grid gap-6 lg:grid-cols-3">
         <div>
           <label htmlFor="pos-school" className="block text-sm font-semibold text-navy-900">
             Target school
           </label>
-          <select
-            id="pos-school"
-            value={schoolSlug}
-            onChange={(e) => setSchoolSlug(e.target.value)}
-            className="mt-2 w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm text-navy-900 focus:border-navy-400 focus:outline-none"
-          >
-            {T14_SCHOOLS.map((s) => (
-              <option key={s.slug} value={s.slug}>
-                {s.name}
-              </option>
-            ))}
-          </select>
+          <SchoolSelect id="pos-school" value={schoolSlug} onChange={setSchoolSlug} />
           <p className="mt-2 text-xs text-[var(--muted)]">
             Acceptance rate: {Math.round(school.acceptanceRate * 100)}%
           </p>

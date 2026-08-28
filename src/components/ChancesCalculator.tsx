@@ -82,7 +82,7 @@ export default function ChancesCalculator() {
     (lsat >= 170 && gpa < 3.5) || (lsat <= 158 && gpa >= 3.7);
 
   return (
-    <div className="rounded-2xl border border-[var(--line)] bg-white shadow-sm">
+    <div className="shadow-card rounded-2xl border border-[var(--line)] bg-white">
       {/* Inputs */}
       <div className="grid gap-0 border-b border-[var(--line)] lg:grid-cols-2">
         <div className="p-6 sm:p-8">
@@ -100,7 +100,7 @@ export default function ChancesCalculator() {
               onChange={(e) => setLsat(Number(e.target.value))}
               className="flex-1"
             />
-            <span className="w-12 text-center text-lg font-semibold tabular-nums text-navy-900">
+            <span key={lsat} className="num-pop w-12 text-center text-lg font-semibold tabular-nums text-navy-900">
               {lsat}
             </span>
           </div>
@@ -122,7 +122,7 @@ export default function ChancesCalculator() {
               onChange={(e) => setGpa(Number(e.target.value))}
               className="flex-1"
             />
-            <span className="w-12 text-center text-lg font-semibold tabular-nums text-navy-900">
+            <span key={gpa.toFixed(2)} className="num-pop w-12 text-center text-lg font-semibold tabular-nums text-navy-900">
               {gpa.toFixed(2)}
             </span>
           </div>
@@ -186,13 +186,13 @@ export default function ChancesCalculator() {
                     <li key={p.school.slug} className="px-4 py-3">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-sm font-medium text-navy-900">{p.school.short}</span>
-                        <span className="text-sm font-semibold tabular-nums text-navy-900">
+                        <span key={Math.round(p.probability * 100)} className="num-pop text-sm font-semibold tabular-nums text-navy-900">
                           {fmtPercent(p.probability)}
                         </span>
                       </div>
                       <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[var(--line)]">
                         <div
-                          className={`h-full rounded-full ${style.bar}`}
+                          className={`chance-bar h-full rounded-full ${style.bar}`}
                           style={{ width: `${Math.round(p.probability * 100)}%` }}
                         />
                       </div>

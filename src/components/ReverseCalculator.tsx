@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
-import { T14_SCHOOLS } from '../data/schools';
+import { ALL_SCHOOLS } from '../data/schools';
+import type { LawSchool } from '../data/schools';
+import SchoolSelect from './SchoolSelect';
 import { predict } from '../lib/calculator';
 
 // Reverse calculator: pick a target school and current GPA, and it finds the
 // LSAT score needed to reach a given admission probability at that school.
 
-function neededLsat(targetProb: number, school: (typeof T14_SCHOOLS)[number], gpa: number): number {
+function neededLsat(targetProb: number, school: LawSchool, gpa: number): number {
   // Binary search over LSAT range using the forward predict() function.
   let lo = 120;
   let hi = 180;
@@ -23,7 +25,7 @@ export default function ReverseCalculator() {
   const [targetProb, setTargetProb] = useState(0.25);
 
   const school = useMemo(
-    () => T14_SCHOOLS.find((s) => s.slug === schoolSlug) ?? T14_SCHOOLS[0],
+    () => ALL_SCHOOLS.find((s) => s.slug === schoolSlug) ?? ALL_SCHOOLS[0],
     [schoolSlug],
   );
 
@@ -33,24 +35,13 @@ export default function ReverseCalculator() {
   const unreachable = targetProb > maxProb;
 
   return (
-    <div className="rounded-2xl border border-[var(--line)] bg-white p-6 shadow-sm sm:p-8">
+    <div className="shadow-card rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-8">
       <div className="grid gap-6 lg:grid-cols-3">
         <div>
           <label htmlFor="rev-school" className="block text-sm font-semibold text-navy-900">
             Target school
           </label>
-          <select
-            id="rev-school"
-            value={schoolSlug}
-            onChange={(e) => setSchoolSlug(e.target.value)}
-            className="mt-2 w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm text-navy-900 focus:border-navy-400 focus:outline-none"
-          >
-            {T14_SCHOOLS.map((s) => (
-              <option key={s.slug} value={s.slug}>
-                {s.name}
-              </option>
-            ))}
-          </select>
+          <SchoolSelect id="rev-school" value={schoolSlug} onChange={setSchoolSlug} />
         </div>
 
         <div>
@@ -94,7 +85,9 @@ export default function ReverseCalculator() {
 
       <div className="mt-6 rounded-xl bg-navy-900 p-6 text-white">
         <p className="text-sm text-navy-200">You need an LSAT of about</p>
-        <p className="mt-1 text-4xl font-semibold tracking-tight">{unreachable ? '180+' : result}</p>
+        <p className="mt-1 text-4xl font-semibold tracking-tight">
+          <span key={result} className="num-pop">{unreachable ? '180+' : result}</span>
+        </p>
         <p className="mt-2 text-sm text-navy-200">
           to have roughly a {Math.round(targetProb * 100)}% chance at {school.short}. At that
           score, our model estimates {Math.round(probabilityNow * 100)}%.

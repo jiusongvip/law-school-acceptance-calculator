@@ -1,17 +1,18 @@
 import { useMemo, useState } from 'react';
-import { T14_SCHOOLS } from '../data/schools';
+import { ALL_SCHOOLS } from '../data/schools';
+import SchoolSelect from './SchoolSelect';
 import { predict } from '../lib/calculator';
 
 // LSAT score sensitivity: how much does raising (or dropping) your LSAT change
 // your chances at a given school? Answers the "should I retake?" decision.
 
 export default function LsatImpact() {
-  const [schoolSlug, setSchoolSlug] = useState(T14_SCHOOLS[3].slug); // Harvard default
+  const [schoolSlug, setSchoolSlug] = useState(ALL_SCHOOLS[3].slug); // Harvard default
   const [gpa, setGpa] = useState(3.7);
   const [currentLsat, setCurrentLsat] = useState(168);
 
   const school = useMemo(
-    () => T14_SCHOOLS.find((s) => s.slug === schoolSlug) ?? T14_SCHOOLS[0],
+    () => ALL_SCHOOLS.find((s) => s.slug === schoolSlug) ?? ALL_SCHOOLS[0],
     [schoolSlug],
   );
 
@@ -35,24 +36,13 @@ export default function LsatImpact() {
   const range = Math.max(maxProb - minProb, 0.01);
 
   return (
-    <div className="rounded-2xl border border-[var(--line)] bg-white p-6 shadow-sm sm:p-8">
+    <div className="shadow-card rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-8">
       <div className="grid gap-6 lg:grid-cols-3">
         <div>
           <label htmlFor="impact-school" className="block text-sm font-semibold text-navy-900">
             School
           </label>
-          <select
-            id="impact-school"
-            value={schoolSlug}
-            onChange={(e) => setSchoolSlug(e.target.value)}
-            className="mt-2 w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-sm text-navy-900 focus:border-navy-400 focus:outline-none"
-          >
-            {T14_SCHOOLS.map((s) => (
-              <option key={s.slug} value={s.slug}>
-                {s.name}
-              </option>
-            ))}
-          </select>
+          <SchoolSelect id="impact-school" value={schoolSlug} onChange={setSchoolSlug} />
         </div>
 
         <div>

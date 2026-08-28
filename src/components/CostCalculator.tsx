@@ -34,7 +34,7 @@ export default function CostCalculator() {
   ];
 
   return (
-    <div className="rounded-2xl border border-[var(--line)] bg-white p-6 shadow-sm sm:p-8">
+    <div className="shadow-card rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-8">
       <div className="grid gap-6 lg:grid-cols-3">
         <div>
           <label htmlFor="cost-schools" className="block text-sm font-semibold text-navy-900">

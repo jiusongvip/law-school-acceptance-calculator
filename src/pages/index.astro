@@ -6,7 +6,8 @@ import CostCalculator from '../components/CostCalculator';
 import ScholarshipEstimator from '../components/ScholarshipEstimator';
 import LsatImpact from '../components/LsatImpact';
 import ScorePositioning from '../components/ScorePositioning';
-import { ALL_SCHOOLS, T14_SCHOOLS, DATA_YEAR } from '../data/schools';
+import AllSchoolsTable from '../components/AllSchoolsTable';
+import { ALL_SCHOOLS, FEATURED_SCHOOLS, T14_SCHOOLS, DATA_YEAR } from '../data/schools';
 import { T14_DEADLINES, TIMELINE } from '../data/costs';
 import { LSAT_BANDS, GPA_BANDS, SPLITTER_PROFILES } from '../data/guides';
 import { T14_PROFILES } from '../data/school-profiles';
@@ -91,6 +92,102 @@ const datasetSchema = {
         </div>
       </noscript>
 
+      <!-- Tool directory -->
+      <div id="tools" class="mt-10 scroll-mt-24">
+        <p class="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+          All tools
+        </p>
+        <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <a href="#calculator" class="shadow-card shadow-card-hover group flex items-start gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+            <span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-navy-50 text-navy-800 transition-colors group-hover:bg-navy-900 group-hover:text-white">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <circle cx="12" cy="12" r="5" />
+                <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+              </svg>
+            </span>
+            <span>
+              <span class="block text-sm font-semibold text-navy-900">Chances Calculator</span>
+              <span class="mt-1 block text-xs leading-relaxed text-[var(--muted)]">
+                Accept, waitlist &amp; reject odds at every T14 and Top 50 school.
+              </span>
+            </span>
+          </a>
+          <a href="#reverse" class="shadow-card shadow-card-hover group flex items-start gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+            <span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-navy-50 text-navy-800 transition-colors group-hover:bg-navy-900 group-hover:text-white">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 9h13a3 3 0 0 1 0 6H9" />
+                <path d="M8 5 4 9l4 4" />
+              </svg>
+            </span>
+            <span>
+              <span class="block text-sm font-semibold text-navy-900">Reverse Calculator</span>
+              <span class="mt-1 block text-xs leading-relaxed text-[var(--muted)]">
+                Find the LSAT score you need for your target school.
+              </span>
+            </span>
+          </a>
+          <a href="#score-impact" class="shadow-card shadow-card-hover group flex items-start gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+            <span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-navy-50 text-navy-800 transition-colors group-hover:bg-navy-900 group-hover:text-white">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 17l6-6 4 4 8-8" />
+                <path d="M14 7h7v7" />
+              </svg>
+            </span>
+            <span>
+              <span class="block text-sm font-semibold text-navy-900">Retake Impact</span>
+              <span class="mt-1 block text-xs leading-relaxed text-[var(--muted)]">
+                See how a few LSAT points move your odds before you retake.
+              </span>
+            </span>
+          </a>
+          <a href="#cost" class="shadow-card shadow-card-hover group flex items-start gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+            <span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-navy-50 text-navy-800 transition-colors group-hover:bg-navy-900 group-hover:text-white">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 2v20" />
+                <path d="M17 6.5c-1-1-2.8-1.5-5-1.5-2.5 0-4.5 1-4.5 3s2 2.5 4.5 3 4.5 1 4.5 3-2 3-4.5 3c-2.2 0-4-.5-5-1.5" />
+              </svg>
+            </span>
+            <span>
+              <span class="block text-sm font-semibold text-navy-900">Cost Calculator</span>
+              <span class="mt-1 block text-xs leading-relaxed text-[var(--muted)]">
+                Estimate application fees, CAS reports &amp; LSAT retakes.
+              </span>
+            </span>
+          </a>
+          <a href="#scholarship" class="shadow-card shadow-card-hover group flex items-start gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+            <span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-navy-50 text-navy-800 transition-colors group-hover:bg-navy-900 group-hover:text-white">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="9" r="5.5" />
+                <path d="M9.5 14 8 22l4-2.5L16 22l-1.5-8" />
+              </svg>
+            </span>
+            <span>
+              <span class="block text-sm font-semibold text-navy-900">Scholarship Estimator</span>
+              <span class="mt-1 block text-xs leading-relaxed text-[var(--muted)]">
+                Predict scholarship offers from your position at the medians.
+              </span>
+            </span>
+          </a>
+          <a href="#positioning" class="shadow-card shadow-card-hover group flex items-start gap-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+            <span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-navy-50 text-navy-800 transition-colors group-hover:bg-navy-900 group-hover:text-white">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 20v-8" />
+                <path d="M9 20V6" />
+                <path d="M14 20v-5" />
+                <path d="M19 20V4" />
+              </svg>
+            </span>
+            <span>
+              <span class="block text-sm font-semibold text-navy-900">Score Positioning</span>
+              <span class="mt-1 block text-xs leading-relaxed text-[var(--muted)]">
+                See where your numbers sit against each school's percentiles.
+              </span>
+            </span>
+          </a>
+        </div>
+      </div>
+
       <div id="positioning" class="mt-8 scroll-mt-24">
         <ScorePositioning client:load />
       </div>
@@ -108,7 +205,7 @@ const datasetSchema = {
         percentile of enrolled full-time students, from ABA 509 Required Disclosures.
       </p>
 
-      <div class="mt-8 overflow-x-auto rounded-2xl border border-[var(--line)] bg-white">
+      <div class="mt-8 overflow-x-auto rounded-2xl border border-[var(--line)] bg-white shadow-card">
         <table class="w-full min-w-[720px] border-collapse text-sm">
           <thead>
             <tr class="border-b border-[var(--line)] bg-[var(--soft)] text-left">
@@ -155,7 +252,7 @@ const datasetSchema = {
         schools in the United States.
       </p>
 
-      <div class="mt-8 overflow-x-auto rounded-2xl border border-[var(--line)] bg-white">
+      <div class="mt-8 overflow-x-auto rounded-2xl border border-[var(--line)] bg-white shadow-card">
         <table class="w-full min-w-[720px] border-collapse text-sm">
           <thead>
             <tr class="border-b border-[var(--line)] bg-[var(--soft)] text-left">
@@ -168,7 +265,7 @@ const datasetSchema = {
             </tr>
           </thead>
           <tbody>
-            {ALL_SCHOOLS.map((s) => (
+            {FEATURED_SCHOOLS.map((s) => (
               <tr class="border-b border-[var(--line)] last:border-0">
                 <td class="px-4 py-3 text-[var(--muted)]">#{s.rank}</td>
                 <td class="px-4 py-3 font-medium text-navy-900">{s.name}</td>
@@ -182,6 +279,23 @@ const datasetSchema = {
             ))}
           </tbody>
         </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- All 196 ABA-approved schools (interactive) -->
+  <section id="all-schools" class="section-pad scroll-mt-24 border-t border-[var(--line)]">
+    <div class="page-shell">
+      <h2 class="text-balance text-3xl font-semibold tracking-[-0.02em] text-navy-950">
+        All 196 ABA-Approved Law Schools
+      </h2>
+      <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
+        Search, filter, and sort the complete {DATA_YEAR} ABA 509 dataset — every ABA-approved
+        law school in the United States, not just the ranked ones. Median LSAT and GPA are the
+        50th percentile of enrolled full-time students.
+      </p>
+      <div class="mt-8">
+        <AllSchoolsTable client:visible />
       </div>
     </div>
   </section>
@@ -262,7 +376,7 @@ const datasetSchema = {
         shift slightly each year, so always confirm on each school's website.
       </p>
 
-      <div class="mt-8 overflow-x-auto rounded-2xl border border-[var(--line)] bg-white">
+      <div class="mt-8 overflow-x-auto rounded-2xl border border-[var(--line)] bg-white shadow-card">
         <table class="w-full min-w-[640px] border-collapse text-sm">
           <thead>
             <tr class="border-b border-[var(--line)] bg-[var(--soft)] text-left">

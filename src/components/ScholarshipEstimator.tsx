@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ALL_SCHOOLS, T14_SCHOOLS } from '../data/schools';
+import { ALL_SCHOOLS, FEATURED_SCHOOLS, T14_SCHOOLS } from '../data/schools';
 import type { LawSchool } from '../data/schools';
 
 // Scholarship estimator: scholarships track the same medians as admission, so
@@ -47,7 +47,7 @@ export default function ScholarshipEstimator() {
   const [gpa, setGpa] = useState(3.85);
   const [showAll, setShowAll] = useState(false);
 
-  const schools = showAll ? ALL_SCHOOLS : T14_SCHOOLS;
+  const schools = showAll ? ALL_SCHOOLS : FEATURED_SCHOOLS;
 
   const rows = useMemo(
     () =>
@@ -65,7 +65,7 @@ export default function ScholarshipEstimator() {
   }, [rows]);
 
   return (
-    <div className="rounded-2xl border border-[var(--line)] bg-white p-6 shadow-sm sm:p-8">
+    <div className="shadow-card rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-8">
       <div className="grid gap-6 lg:grid-cols-3">
         <div>
           <label htmlFor="sch-lsat" className="block text-sm font-semibold text-navy-900">
@@ -161,7 +161,7 @@ export default function ScholarshipEstimator() {
           onClick={() => setShowAll(!showAll)}
           className="text-sm font-medium text-navy-800 underline-offset-2 hover:underline"
         >
-          {showAll ? 'Show T14 only' : 'Show all Top 50 schools'}
+          {showAll ? 'Show featured 30 only' : 'Show all 196 ABA schools'}
         </button>
         <p className="text-xs text-[var(--muted)]">
           Estimates assume you are at or above a school's medians. Actual awards vary by school and cycle.
