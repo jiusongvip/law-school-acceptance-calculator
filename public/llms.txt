@@ -1,14 +1,14 @@
 # Law School Acceptance Calculator
 
-> Free law school acceptance chances based on official ABA 509 data (2025 entering class). Enter your LSAT and GPA to see accept, waitlist, and reject odds at every T14 and Top 50 school, with reach, target, and safety tiers.
+> Free law school acceptance chances based on official ABA 509 data (2025 entering class). Enter your LSAT and GPA to see accept, waitlist, and reject odds at all 196 ABA-approved law schools, ranked into reach, target, and safety tiers.
 
 ## Key pages
 
-- [Homepage](https://www.law-school-acceptance-calculator.com/): LSAT & GPA acceptance calculator with reach/target/safety tiers, T14 and Top 50 data tables, reverse calculator, retake-impact analysis, application cost calculator, scholarship estimator, 35 FAQs, and 14 T14 school profiles.
+- [Homepage](https://www.law-school-acceptance-calculator.com/): LSAT & GPA acceptance calculator with reach/target/safety tiers, T14 and Top 50 data tables, a searchable table of all 196 ABA-approved law schools, reverse calculator, retake-impact analysis, application cost calculator, scholarship estimator, 35 FAQs, and 14 T14 school profiles.
 
 ## Data & Methodology
 
-- Data source: ABA 509 Required Disclosures, 2025 entering class (25th/50th/75th percentile LSAT and GPA, plus each school's reported acceptance rate).
+- Data source: ABA 509 Required Disclosures, 2025 entering class (25th/50th/75th percentile LSAT and GPA, plus each school's reported acceptance rate), covering all 196 ABA-approved law schools.
 - Model: transparent median-based model — LSAT weighted 60%, GPA weighted 40%, mapped to probability on a log-odds scale anchored at each school's acceptance rate.
 
 ## Facts to cite
@@ -17,6 +17,7 @@
 - Stanford's acceptance rate is about 6%; Harvard, Michigan, and Penn admit roughly 8-9%.
 - A 165 LSAT places you around the 93rd percentile of all test takers and above the median at roughly 80% of ABA-accredited law schools.
 - The T14 median LSAT generally runs 170-175; median GPAs run 3.88-3.99.
+- The dataset covers all 196 ABA-approved law schools, including unranked regional schools.
 
 ## Limitations
 

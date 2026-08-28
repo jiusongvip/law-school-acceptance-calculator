@@ -16,7 +16,7 @@ import { FAQS } from '../data/faqs';
 
 const title = 'Law School Acceptance Calculator - Free LSAT & GPA Chances';
 const description =
-  'Calculate your law school acceptance chances for free using 2025 ABA 509 data. See accept, waitlist, and reject odds at T14 and Top 50 schools. No signup.';
+  'Calculate your law school acceptance chances for free using official 2025 ABA 509 data. See accept, waitlist, and reject odds at all 196 ABA-approved law schools, from the T14 to regional schools. No signup.';
 
 const faqs = FAQS;
 
@@ -34,7 +34,7 @@ const webAppSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'Law School Acceptance Calculator',
-  url: 'https://www.law-school-acceptance-calculator.com/',
+  url: 'https://www.law-school-acceptance-calculator.com',
   applicationCategory: 'EducationalApplication',
   operatingSystem: 'Any',
   description,
@@ -49,7 +49,7 @@ const datasetSchema = {
   '@context': 'https://schema.org',
   '@type': 'Dataset',
   name: `Law School Admissions Data (${DATA_YEAR})`,
-  description: `LSAT, GPA, and acceptance rate percentiles for T14 and Top 50 U.S. law schools, ${DATA_YEAR} entering class, sourced from ABA 509 Required Disclosures.`,
+  description: `LSAT, GPA, and acceptance rate percentiles for all 196 ABA-approved U.S. law schools, ${DATA_YEAR} entering class, sourced from ABA 509 Required Disclosures.`,
   license: 'https://www.americanbar.org/groups/legal_education/resources/statistics/',
   isAccessibleForFree: true,
   dateModified: `${DATA_YEAR}-12-01`,
@@ -71,8 +71,9 @@ const datasetSchema = {
           Law School Acceptance Calculator
         </h1>
         <p class="mt-4 max-w-[60ch] text-lg leading-relaxed text-[var(--muted)]">
-          Enter your LSAT and GPA to see your admission chances at every T14 and Top 50 law school,
-          ranked into reach, target, and safety tiers. Free, no signup, based on official ABA 509 data.
+          Enter your LSAT and GPA to see your admission chances at all 196 ABA-approved law
+          schools — from the T14 to regional schools — ranked into reach, target, and safety
+          tiers. Free, no signup, based on official ABA 509 data.
         </p>
       </div>
 
@@ -87,7 +88,8 @@ const datasetSchema = {
           <p class="mt-2 text-sm text-[var(--muted)]">
             With these numbers, every T14 school is a reach, but your odds vary meaningfully:
             Georgetown and Berkeley around 12%, Cornell and Duke around 9-10%, and Yale, Stanford,
-            Harvard, and Chicago near 2-4%. Enable JavaScript to calculate your own chances.
+            Harvard, and Chicago near 2-4%. The calculator covers all 196 ABA-approved law schools —
+            enable JavaScript to calculate your own chances.
           </p>
         </div>
       </noscript>
@@ -109,7 +111,7 @@ const datasetSchema = {
             <span>
               <span class="block text-sm font-semibold text-navy-900">Chances Calculator</span>
               <span class="mt-1 block text-xs leading-relaxed text-[var(--muted)]">
-                Accept, waitlist &amp; reject odds at every T14 and Top 50 school.
+                Accept, waitlist &amp; reject odds at all 196 ABA-approved law schools.
               </span>
             </span>
           </a>
@@ -356,8 +358,8 @@ const datasetSchema = {
       </h2>
       <p class="mt-3 max-w-[65ch] text-[var(--muted)]">
         Scholarships track the same medians as admission: the more you sit above a school's LSAT
-        and GPA medians, the larger the offer. See your scholarship outlook at every T14 and Top 50
-        school.
+        and GPA medians, the larger the offer. See your scholarship outlook across all 196
+        ABA-approved law schools.
       </p>
       <div class="mt-8">
         <ScholarshipEstimator client:visible />
